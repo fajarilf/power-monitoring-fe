@@ -1,5 +1,5 @@
 import { apiGet } from "@/lib/api-client";
-import { toReading, toDailySummary } from "../utils/map-measurement";
+import { toReading, toDailySummary, deduplicateByMinute } from "../utils/map-measurement";
 import type { ApiDailyAggregate, ApiMeasurement, GetMeasurementsParams, MeasurementSummary, Reading } from "./measurements.types";
 
 // ponytail: one device exists today (/api/devices). Promote to a parameter
@@ -8,9 +8,9 @@ export const DEVICE_ID = 1;
 
 export async function getMeasurements({ from, to }: GetMeasurementsParams): Promise<Reading[]> {
   const data = await apiGet<ApiMeasurement[]>("/api/measurements", { deviceId: DEVICE_ID, from, to, page: 1, limit: 5000 });
-  // ponytail: backend returns newest-first; table has always read oldest-first,
-  // so sort here rather than reorder every consumer.
-  return data.map(toReading).sort((a, b) => a.ts.getTime() - b.ts.getTime());
+  // Table reads newest-first (most recent reading on top); sort here rather
+  // than reorder every consumer.
+  return deduplicateByMinute(data.map(toReading).sort((a, b) => b.ts.getTime() - a.ts.getTime()));
 }
 
 export async function getMeasurementsSummary({ from, to }: GetMeasurementsParams): Promise<MeasurementSummary> {

@@ -4,7 +4,19 @@ import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
 import { useMeasurements, useMeasurementsSummary } from "../api/measurements.queries";
 import { COLUMNS } from "../utils/columns";
-import type { Reading, Stats } from "../api/measurements.types";
+import type { MeasurementSummary, Reading, Stats } from "../api/measurements.types";
+
+function scaleVolts(s: Stats): Stats {
+  return { ...s, u1: s.u1 / 10, u2: s.u2 / 10, u3: s.u3 / 10 };
+}
+
+function scaleStats(stats: MeasurementSummary): MeasurementSummary {
+  return { avg: scaleVolts(stats.avg), max: scaleVolts(stats.max), min: scaleVolts(stats.min) };
+}
+
+function scaleRows(rows: Reading[]): Reading[] {
+  return rows.map((r) => ({ ...r, ...scaleVolts(r) }));
+}
 
 const HEADER = ["Date", "Time", ...COLUMNS.map((c) => c.label)];
 
@@ -36,12 +48,14 @@ export function ExportButton({ from, to }: ExportButtonProps) {
 
   function handleExport() {
     if (!rowsQuery.data || !statsQuery.data) return;
+    const stats = scaleStats(statsQuery.data);
+    const rows = scaleRows(rowsQuery.data);
     const aoa = [
       HEADER,
-      statRow("Average", statsQuery.data.avg),
-      statRow("Maximum", statsQuery.data.max),
-      statRow("Minimum", statsQuery.data.min),
-      ...rowsQuery.data.map(dataRow),
+      statRow("Average", stats.avg),
+      statRow("Maximum", stats.max),
+      statRow("Minimum", stats.min),
+      ...rows.map(dataRow),
     ];
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     // merge the Date+Time columns for the three summary label rows (rows 1-3, 0-indexed)
