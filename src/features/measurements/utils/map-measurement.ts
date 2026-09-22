@@ -40,18 +40,6 @@ export function toLiveReading(msg: MqttMeasurement): LiveReading {
   };
 }
 
-/** Keep only the first reading per calendar minute. The input must already be
- * sorted newest-first so the first item in each minute bucket is the latest. */
-export function deduplicateByMinute(readings: Reading[]): Reading[] {
-  const seen = new Set<string>();
-  return readings.filter((r) => {
-    const key = `${r.ts.getFullYear()}-${r.ts.getMonth()}-${r.ts.getDate()}-${r.ts.getHours()}-${r.ts.getMinutes()}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
-
 /** Combine daily aggregate buckets (one per calendar day in the requested
  * range) into a single period avg/max/min. Max/min across buckets are true
  * overall max/min. Avg must be weighted by sampleCount — an unweighted
