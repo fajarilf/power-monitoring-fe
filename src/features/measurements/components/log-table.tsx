@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { PF_THRESHOLD } from "../utils/constants";
 import { COLUMNS, PHASE_COLOR, PHASE_BG, PHASE_LABEL, type Phase } from "../utils/columns";
 import type { MeasurementSummary, Reading, Stats } from "../api/measurements.types";
 
 const COL_COUNT = 2 + COLUMNS.length;
+const PAGE_SIZE = 100;
 
 // Fixed heights keep the sticky offsets exact — a sticky row can't measure
 // what's above it without becoming a client component.
@@ -42,9 +44,17 @@ export function LogTable({ rows, stats, loading, error, onRetry }: LogTableProps
   const groups = phaseGroups();
   const nonPhaseCount = COLUMNS.filter((c) => !c.phase).length;
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(rows.length / PAGE_SIZE);
+  const clampedPage = Math.min(currentPage, totalPages || 1);
+  const startIndex = (clampedPage - 1) * PAGE_SIZE;
+  const endIndex = startIndex + PAGE_SIZE;
+  const paginatedRows = rows.slice(startIndex, endIndex);
+
   return (
-    <div className="rounded-lg border border-border bg-surface">
-      <div className="max-h-135 overflow-auto rounded-lg border border-border">
+    <>
+      <div className="rounded-lg border border-border bg-surface">
+        <div className="max-h-135 overflow-auto rounded-lg border border-border">
         <table className="min-w-full border-separate border-spacing-0 text-[12.5px]">
           <thead>
             <tr>
@@ -112,12 +122,38 @@ export function LogTable({ rows, stats, loading, error, onRetry }: LogTableProps
                 </td>
               </tr>
             ) : (
-              rows.map((r) => <DataRow key={r.ts.toISOString()} r={r} />)
+              paginatedRows.map((r) => <DataRow key={r.ts.toISOString()} r={r} />)
             )}
           </tbody>
         </table>
       </div>
-    </div>
+      </div>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-3.5 py-2.5 text-[12px]">
+          <span className="text-text-dim">
+            Showing {startIndex + 1}-{Math.min(endIndex, rows.length)} of {rows.length}
+          </span>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="rounded-md border border-border bg-surface-2 px-3 py-1.5 text-[11.5px] font-medium hover:bg-border-soft disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Prev
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="rounded-md border border-border bg-surface-2 px-3 py-1.5 text-[11.5px] font-medium hover:bg-border-soft disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -146,7 +182,6 @@ function StatRow({ label, s, top, last }: { label: string; s: Stats | undefined;
 }
 
 function DataRow({ r }: { r: Reading }) {
-  console.log(`value: ${r.wp}`)
   return (
     <tr className="hover:bg-white/2">
       <td className="whitespace-nowrap px-3.5 py-2 text-left text-text-secondary" style={DIVIDER_RULE}>
