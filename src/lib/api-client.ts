@@ -9,7 +9,7 @@ interface Envelope<T> {
   data: T;
 }
 
-export async function apiGet<T>(path: string, params: Record<string, string | number>): Promise<T> {
+export async function apiGet<T>(path: string, params: Record<string, string | number | boolean>): Promise<T> {
   const url = new URL(path, env.apiBaseUrl);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, String(v));
 

@@ -28,7 +28,9 @@ export interface DateRange {
   to: string;
 }
 
-export type GetMeasurementsParams = DateRange;
+export interface GetMeasurementsParams extends DateRange {
+  paginate?: boolean;
+}
 
 export interface ApiMeasurement {
   id: number;

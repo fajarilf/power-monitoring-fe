@@ -2,12 +2,12 @@
 
 import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
-import { useMeasurements, useMeasurementsSummary } from "../api/measurements.queries";
+import { useMeasurementsForExport, useMeasurementsSummary } from "../api/measurements.queries";
 import { COLUMNS } from "../utils/columns";
 import type { MeasurementSummary, Reading, Stats } from "../api/measurements.types";
 
 function scaleVolts(s: Stats): Stats {
-  return { ...s, u1: s.u1 / 10, u2: s.u2 / 10, u3: s.u3 / 10, q: s.q / 10, pf: s.pf / 1000 };
+  return { ...s, u1: s.u1 / 10, u2: s.u2 / 10, u3: s.u3 / 10, q: s.q / 10, pf: s.pf / 1000, wp: s.wp / 100 };
 }
 
 function scaleStats(stats: MeasurementSummary): MeasurementSummary {
@@ -38,18 +38,18 @@ export interface ExportButtonProps {
 }
 
 export function ExportButton({ from, to }: ExportButtonProps) {
-  // Same hooks (same query keys) as LogTableContainer — TanStack serves this
-  // from cache, so export never costs an extra request and can't disagree
-  // with what's on screen.
-  const rowsQuery = useMeasurements({ from, to });
+  // Separate hook for export — fetches ALL data with paginate: false.
+  // Uses a different query key so it doesn't interfere with the table's cache.
+  const rowsQuery = useMeasurementsForExport({ from, to });
   const statsQuery = useMeasurementsSummary({ from, to });
 
-  const disabled = rowsQuery.isPending || statsQuery.isPending || !!rowsQuery.error || !!statsQuery.error;
+  const disabled = rowsQuery.isFetching || statsQuery.isPending || !!statsQuery.error;
 
-  function handleExport() {
-    if (!rowsQuery.data || !statsQuery.data) return;
+  async function handleExport() {
+    const result = await rowsQuery.refetch();
+    if (!result.data || !statsQuery.data) return;
     const stats = scaleStats(statsQuery.data);
-    const rows = scaleRows(rowsQuery.data);
+    const rows = scaleRows(result.data);
     const aoa = [
       HEADER,
       statRow("Average", stats.avg),
@@ -71,7 +71,7 @@ export function ExportButton({ from, to }: ExportButtonProps) {
 
   return (
     <Button type="button" variant="secondary" onClick={handleExport} disabled={disabled}>
-      Export to Excel
+      {rowsQuery.isFetching ? "Exporting..." : "Export to Excel"}
     </Button>
   );
 }

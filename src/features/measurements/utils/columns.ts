@@ -22,7 +22,7 @@ export const COLUMNS: Column[] = [
   { key: "p", label: "P (kW)", digits: 2 },
   { key: "q", label: "Q (kvar)", digits: 2 },
   { key: "pf", label: "PF", digits: 3 },
-  { key: "wp", label: "WP+ (kWh)", digits: 2 },
+  { key: "wp", label: "WP+ (MWh)", digits: 2 },
 ];
 
 export const PHASE_COLOR: Record<Phase, string> = {

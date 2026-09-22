@@ -9,7 +9,7 @@ export interface LogTableContainerProps {
 }
 
 function scaleVolts(s: Stats): Stats {
-  return { ...s, u1: s.u1 / 10, u2: s.u2 / 10, u3: s.u3 / 10, q: s.q / 10, pf: s.pf / 1000 };
+  return { ...s, u1: s.u1 / 10, u2: s.u2 / 10, u3: s.u3 / 10, q: s.q / 10, pf: s.pf / 1000, wp: s.wp / 100 };
 }
 
 function scaleStats(stats: MeasurementSummary | undefined): MeasurementSummary | undefined {

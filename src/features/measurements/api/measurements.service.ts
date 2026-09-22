@@ -6,8 +6,11 @@ import type { ApiDailyAggregate, ApiMeasurement, GetMeasurementsParams, Measurem
 // when a device selector does.
 export const DEVICE_ID = 1;
 
-export async function getMeasurements({ from, to }: GetMeasurementsParams): Promise<Reading[]> {
-  const data = await apiGet<ApiMeasurement[]>("/api/measurements", { deviceId: DEVICE_ID, from, to, page: 1, limit: 5000 });
+export async function getMeasurements({ from, to, paginate }: GetMeasurementsParams): Promise<Reading[]> {
+  const params: Record<string, string | number | boolean> = { deviceId: DEVICE_ID, from, to, page: 1 };
+  if (paginate !== false) params.limit = 5000;
+  else params.paginate = false;
+  const data = await apiGet<ApiMeasurement[]>("/api/measurements", params);
   // Table reads newest-first (most recent reading on top); sort here rather
   // than reorder every consumer.
   return data.map(toReading).sort((a, b) => b.ts.getTime() - a.ts.getTime());

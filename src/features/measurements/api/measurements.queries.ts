@@ -8,6 +8,8 @@ export const measurementKeys = {
   list: (params: GetMeasurementsParams) => [...measurementKeys.lists(), DEVICE_ID, params] as const,
   summaries: () => [...measurementKeys.all, "summary"] as const,
   summary: (params: GetMeasurementsParams) => [...measurementKeys.summaries(), DEVICE_ID, params] as const,
+  exports: () => [...measurementKeys.all, "export"] as const,
+  export: (params: GetMeasurementsParams) => [...measurementKeys.exports(), DEVICE_ID, params] as const,
 };
 
 const REFETCH_MS = 60_000;
@@ -18,4 +20,12 @@ export function useMeasurements(params: GetMeasurementsParams) {
 
 export function useMeasurementsSummary(params: GetMeasurementsParams) {
   return useQuery({ queryKey: measurementKeys.summary(params), queryFn: () => getMeasurementsSummary(params), refetchInterval: REFETCH_MS });
+}
+
+export function useMeasurementsForExport(params: GetMeasurementsParams) {
+  return useQuery({
+    queryKey: measurementKeys.export(params),
+    queryFn: () => getMeasurements({ ...params, paginate: false }),
+    enabled: false,
+  });
 }
