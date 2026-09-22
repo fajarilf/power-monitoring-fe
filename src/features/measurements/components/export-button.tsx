@@ -7,7 +7,7 @@ import { COLUMNS } from "../utils/columns";
 import type { MeasurementSummary, Reading, Stats } from "../api/measurements.types";
 
 function scaleVolts(s: Stats): Stats {
-  return { ...s, u1: s.u1 / 10, u2: s.u2 / 10, u3: s.u3 / 10 };
+  return { ...s, u1: s.u1 / 10, u2: s.u2 / 10, u3: s.u3 / 10, q: s.q / 10, pf: s.pf / 1000 };
 }
 
 function scaleStats(stats: MeasurementSummary): MeasurementSummary {

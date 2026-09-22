@@ -146,6 +146,7 @@ function StatRow({ label, s, top, last }: { label: string; s: Stats | undefined;
 }
 
 function DataRow({ r }: { r: Reading }) {
+  console.log(`value: ${r.wp}`)
   return (
     <tr className="hover:bg-white/2">
       <td className="whitespace-nowrap px-3.5 py-2 text-left text-text-secondary" style={DIVIDER_RULE}>
