@@ -15,7 +15,6 @@ export function DateRangeForm({ from, to }: DateRangeFormProps) {
           type="date"
           name="from"
           defaultValue={from}
-          max={to}
           className="rounded-md border border-border bg-surface-2 px-2.5 py-2 font-mono text-[13px] text-text-primary"
         />
       </div>
@@ -25,7 +24,6 @@ export function DateRangeForm({ from, to }: DateRangeFormProps) {
           type="date"
           name="to"
           defaultValue={to}
-          min={from}
           className="rounded-md border border-border bg-surface-2 px-2.5 py-2 font-mono text-[13px] text-text-primary"
         />
       </div>
