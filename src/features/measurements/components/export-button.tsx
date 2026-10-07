@@ -20,19 +20,15 @@ function scaleRows(rows: Reading[]): Reading[] {
 
 const HEADER = ["Date", "Time", ...COLUMNS.map((c) => c.label)];
 
-function formatNumber(value: number, digits: number) {
-  return value.toFixed(digits).replace(".", ",");
-}
-
 function statRow(label: string, s: Stats) {
-  return [label, "", ...COLUMNS.map((c) => formatNumber(s[c.key], c.digits))];
+  return [label, "", ...COLUMNS.map((c) => s[c.key])];
 }
 
 function dataRow(r: Reading) {
   return [
     r.ts.toLocaleDateString(),
     r.ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    ...COLUMNS.map((c) => formatNumber(r[c.key], c.digits)),
+    ...COLUMNS.map((c) => r[c.key]),
   ];
 }
 
