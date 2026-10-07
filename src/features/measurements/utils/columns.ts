@@ -1,9 +1,9 @@
-import type { Reading } from "../api/measurements.types";
+import type { Stats } from "../api/measurements.types";
 
 export type Phase = "r" | "s" | "t";
 
 export interface Column {
-  key: keyof Omit<Reading, "ts">;
+  key: keyof Stats | "consumptionKwh";
   label: string;
   digits: number;
   phase?: Phase;
@@ -22,7 +22,7 @@ export const COLUMNS: Column[] = [
   { key: "p", label: "P (kW)", digits: 2 },
   { key: "q", label: "Q (kvar)", digits: 2 },
   { key: "pf", label: "PF", digits: 3 },
-  { key: "wp", label: "WP+ (MWh)", digits: 2 },
+  { key: "consumptionKwh", label: "Consumption (kWh)", digits: 2 },
 ];
 
 export const PHASE_COLOR: Record<Phase, string> = {

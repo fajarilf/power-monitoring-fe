@@ -55,12 +55,12 @@ export function LogTable({ rows, stats, loading, error, onRetry }: LogTableProps
     <>
       <div className="rounded-lg border border-border bg-surface">
         <div className="max-h-135 overflow-auto rounded-lg border border-border">
-        <table className="min-w-full border-separate border-spacing-0 text-[12.5px]">
+        <table className="w-full table-fixed border-separate border-spacing-0 text-[12px]">
           <thead>
             <tr>
               <th className="sticky top-0 z-30 bg-surface-2" style={{ height: H_CHIP }} colSpan={2}></th>
               {groups.map((g, i) => (
-                <th key={i} className="sticky top-0 z-30 bg-surface-2 px-3.5 pt-1.5" style={{ height: H_CHIP }} colSpan={g.span}>
+                <th key={i} className="sticky top-0 z-30 bg-surface-2 px-2 pt-1.5" style={{ height: H_CHIP }} colSpan={g.span}>
                   <span
                     className="inline-block rounded px-1.5 py-0.5 text-[9.5px] font-bold tracking-wide uppercase"
                     style={{ background: PHASE_BG[g.phase], color: PHASE_COLOR[g.phase] }}
@@ -73,13 +73,13 @@ export function LogTable({ rows, stats, loading, error, onRetry }: LogTableProps
             </tr>
             <tr>
               <th
-                className="sticky z-30 whitespace-nowrap bg-surface-2 px-3.5 py-2.5 text-left font-mono text-[11.5px] font-semibold"
+                className="sticky z-30 bg-surface-2 px-2 py-2.5 text-left font-mono text-[11px] font-semibold leading-tight"
                 style={{ top: H_CHIP, height: H_LABEL, ...HEADER_RULE }}
               >
                 Date
               </th>
               <th
-                className="sticky z-30 whitespace-nowrap bg-surface-2 px-3.5 py-2.5 text-left font-mono text-[11.5px] font-semibold"
+                className="sticky z-30 bg-surface-2 px-2 py-2.5 text-left font-mono text-[11px] font-semibold leading-tight"
                 style={{ top: H_CHIP, height: H_LABEL, ...HEADER_RULE }}
               >
                 Time
@@ -87,7 +87,7 @@ export function LogTable({ rows, stats, loading, error, onRetry }: LogTableProps
               {COLUMNS.map((c) => (
                 <th
                   key={c.key}
-                  className="sticky z-30 whitespace-nowrap bg-surface-2 px-3.5 py-2.5 text-right font-mono text-[11.5px] font-semibold"
+                  className="sticky z-30 bg-surface-2 px-2 py-2.5 text-right font-mono text-[11px] font-semibold leading-tight"
                   style={{ top: H_CHIP, height: H_LABEL, color: c.phase ? PHASE_COLOR[c.phase] : undefined, ...HEADER_RULE }}
                 >
                   {c.label}
@@ -162,7 +162,7 @@ function StatRow({ label, s, top, last }: { label: string; s: Stats | undefined;
   return (
     <tr className="font-semibold">
       <td
-        className="sticky z-20 whitespace-nowrap bg-surface-2 px-3.5 py-2 text-left text-[11px] tracking-wide uppercase"
+        className="sticky z-20 whitespace-nowrap bg-surface-2 px-2 py-2 text-left text-[11px] tracking-wide uppercase"
         style={cellStyle}
         colSpan={2}
       >
@@ -171,7 +171,7 @@ function StatRow({ label, s, top, last }: { label: string; s: Stats | undefined;
       {COLUMNS.map((c) => (
         <td
           key={c.key}
-          className="sticky z-20 whitespace-nowrap bg-surface-2 px-3.5 py-2 text-right font-mono"
+          className="sticky z-20 whitespace-nowrap bg-surface-2 px-2 py-2 text-right font-mono"
           style={{ ...cellStyle, color: c.phase ? PHASE_COLOR[c.phase] : undefined }}
         >
           {s === undefined ? <span className="text-text-dim">—</span> : c.key === "pf" ? <PfCell value={s.pf} /> : s[c.key].toFixed(c.digits)}
@@ -184,16 +184,16 @@ function StatRow({ label, s, top, last }: { label: string; s: Stats | undefined;
 function DataRow({ r }: { r: Reading }) {
   return (
     <tr className="hover:bg-white/2">
-      <td className="whitespace-nowrap px-3.5 py-2 text-left text-text-secondary" style={DIVIDER_RULE}>
+      <td className="whitespace-nowrap px-2 py-2 text-left text-text-secondary" style={DIVIDER_RULE}>
         {r.ts.toLocaleDateString()}
       </td>
-      <td className="whitespace-nowrap px-3.5 py-2 text-left text-text-secondary" style={DIVIDER_RULE}>
+      <td className="whitespace-nowrap px-2 py-2 text-left text-text-secondary" style={DIVIDER_RULE}>
         {r.ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
       </td>
       {COLUMNS.map((c) => (
         <td
           key={c.key}
-          className="whitespace-nowrap px-3.5 py-2 text-right font-mono"
+          className="whitespace-nowrap px-2 py-2 text-right font-mono"
           style={{ color: c.phase ? PHASE_COLOR[c.phase] : undefined, ...DIVIDER_RULE }}
         >
           {c.key === "pf" ? <PfCell value={r.pf} /> : r[c.key].toFixed(c.digits)}
@@ -207,7 +207,7 @@ function SkeletonRow() {
   return (
     <tr>
       {Array.from({ length: COL_COUNT }).map((_, i) => (
-        <td key={i} className="px-3.5 py-2" style={DIVIDER_RULE}>
+        <td key={i} className="px-2 py-2" style={DIVIDER_RULE}>
           <div className="h-3 animate-pulse rounded bg-surface-2" />
         </td>
       ))}

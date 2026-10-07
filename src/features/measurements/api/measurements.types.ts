@@ -13,6 +13,7 @@ export interface Reading {
   q: number; // Q (kvar)
   pf: number; // PF
   wp: number; // WP+ (kWh), cumulative register
+  consumptionKwh: number;
 }
 
 export type Stats = Omit<Reading, "ts">;
@@ -35,7 +36,7 @@ export interface GetMeasurementsParams extends DateRange {
 export interface ApiMeasurement {
   id: number;
   deviceId: number;
-  deviceName: string;
+  deviceName: string | null;
   u1R: number;
   u2S: number;
   u3T: number;
@@ -48,6 +49,7 @@ export interface ApiMeasurement {
   pf: number;
   wpPlus: number;
   recordedAt: string;
+  consumptionKwh: number;
 }
 
 // One calendar-day aggregate bucket from GET /api/measurements/{deviceId}/daily.
@@ -90,6 +92,7 @@ export interface ApiDailyAggregate {
   wpPlus_Min: number;
   wpPlus_Max: number;
   sampleCount: number;
+  consumptionKwh: number;
 }
 
 // One MQTT message published by the meter. voltage/current are present on

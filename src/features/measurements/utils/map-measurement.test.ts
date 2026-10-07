@@ -19,6 +19,7 @@ const sample: ApiMeasurement = {
   pf: 0.6806,
   wpPlus: 0.2251,
   recordedAt: "2026-08-27T13:51:02.957+07:00",
+  consumptionKwh: 0.12,
 };
 
 test("toReading maps every field to the right Reading key", () => {
@@ -34,6 +35,7 @@ test("toReading maps every field to the right Reading key", () => {
   assert.equal(r.q, sample.kvar);
   assert.equal(r.pf, sample.pf);
   assert.equal(r.wp, sample.wpPlus);
+  assert.equal(r.consumptionKwh, sample.consumptionKwh);
   assert.equal(r.ts.getTime(), new Date("2026-08-27T13:51:02.957+07:00").getTime());
 });
 
@@ -76,6 +78,7 @@ const dailyBuckets: ApiDailyAggregate[] = [
     wpPlus_Min: 0.0455,
     wpPlus_Max: 0.2173,
     sampleCount: 304,
+    consumptionKwh: 10.5,
   },
   {
     deviceId: 1,
@@ -114,6 +117,7 @@ const dailyBuckets: ApiDailyAggregate[] = [
     wpPlus_Min: 0.0471,
     wpPlus_Max: 0.0821,
     sampleCount: 56,
+    consumptionKwh: 4.5,
   },
 ];
 
@@ -123,6 +127,8 @@ test("toDailySummary: max/min are true overall extremes across buckets", () => {
   assert.equal(min.u1, Math.min(355.04, 355.11));
   assert.equal(max.wp, Math.max(0.2173, 0.0821));
   assert.equal(min.wp, Math.min(0.0455, 0.0471));
+  assert.equal(max.consumptionKwh, 10.5);
+  assert.equal(min.consumptionKwh, 4.5);
 });
 
 test("toDailySummary: avg is weighted by sampleCount, not a mean of daily means", () => {
@@ -134,6 +140,7 @@ test("toDailySummary: avg is weighted by sampleCount, not a mean of daily means"
   const expectedWp = (0.13083289473684223 * 304 + 0.06448035714285714 * 56) / (304 + 56);
   assert.ok(Math.abs(avg.u1 - expectedU1) < 1e-9);
   assert.ok(Math.abs(avg.wp - expectedWp) < 1e-9);
+  assert.equal(avg.consumptionKwh, 7.5);
 
   // The two sampleCounts (304 vs 56) differ enough that an unweighted
   // mean-of-means would give a visibly different, wrong wp average.
@@ -146,6 +153,7 @@ test("toDailySummary returns zeros for an empty bucket list", () => {
   assert.equal(avg.u1, 0);
   assert.equal(max.u1, 0);
   assert.equal(min.u1, 0);
+  assert.equal(avg.consumptionKwh, 0);
 });
 
 const mqttSample: MqttMeasurement = {

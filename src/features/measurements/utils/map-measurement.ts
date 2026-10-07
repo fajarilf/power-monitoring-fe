@@ -27,6 +27,7 @@ export function toReading(m: ApiMeasurement): Reading {
     q: m.kvar,
     pf: m.pf,
     wp: m.wpPlus,
+    consumptionKwh: m.consumptionKwh,
   };
 }
 
@@ -46,7 +47,7 @@ export function toLiveReading(msg: MqttMeasurement): LiveReading {
  * mean-of-daily-means is wrong whenever days have different sample counts
  * (e.g. a partial "today"). */
 export function toDailySummary(buckets: ApiDailyAggregate[]): MeasurementSummary {
-  const zero: Stats = { u1: 0, u2: 0, u3: 0, i1: 0, i2: 0, i3: 0, s: 0, p: 0, q: 0, pf: 0, wp: 0 };
+  const zero: Stats = { u1: 0, u2: 0, u3: 0, i1: 0, i2: 0, i3: 0, s: 0, p: 0, q: 0, pf: 0, wp: 0, consumptionKwh: 0 };
   if (buckets.length === 0) return { avg: zero, max: { ...zero }, min: { ...zero } };
 
   const totalSamples = buckets.reduce((n, b) => n + b.sampleCount, 0);
@@ -68,6 +69,7 @@ export function toDailySummary(buckets: ApiDailyAggregate[]): MeasurementSummary
       q: avgOf((b) => b.kvaR_Avg),
       pf: avgOf((b) => b.pF_Avg),
       wp: avgOf((b) => b.wpPlus_Avg),
+      consumptionKwh: buckets.reduce((sum, b) => sum + b.consumptionKwh, 0) / buckets.length,
     },
     max: {
       u1: maxOf((b) => b.u1R_Max),
@@ -81,6 +83,7 @@ export function toDailySummary(buckets: ApiDailyAggregate[]): MeasurementSummary
       q: maxOf((b) => b.kvaR_Max),
       pf: maxOf((b) => b.pF_Max),
       wp: maxOf((b) => b.wpPlus_Max),
+      consumptionKwh: maxOf((b) => b.consumptionKwh),
     },
     min: {
       u1: minOf((b) => b.u1R_Min),
@@ -94,6 +97,7 @@ export function toDailySummary(buckets: ApiDailyAggregate[]): MeasurementSummary
       q: minOf((b) => b.kvaR_Min),
       pf: minOf((b) => b.pF_Min),
       wp: minOf((b) => b.wpPlus_Min),
+      consumptionKwh: minOf((b) => b.consumptionKwh),
     },
   };
 }
